@@ -1,12 +1,13 @@
-
-
 import java.util.HashMap;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 public class ATM {
 	private int id;
 	private double balance;
 	private HashMap <Integer, Double> accounts;
+	NumberFormat roundy = new DecimalFormat ("0.00");
 	
 	public ATM()
 	{
@@ -49,7 +50,7 @@ public class ATM {
 		
 		if (accounts.containsKey (accountID))
 		{
-			currentBalance = accounts.get(accountID);
+			currentBalance = Double.parseDouble(roundy.format(currentBalance));
 			return currentBalance;
 		}
 		else
@@ -60,7 +61,7 @@ public class ATM {
 	
 	public boolean depositMoney (int accountID, double money)
 	{
-		if (accounts.containsKey (accountID))
+		if (accounts.containsKey (accountID) && money >= 0)
 		{
 			accounts.replace (accountID, accounts.get(accountID) + money);
 			return true;
@@ -73,7 +74,7 @@ public class ATM {
 	
 	public boolean withdrawMoney (int accountID, double money)
 	{
-		if (accounts.containsKey (accountID))
+		if (accounts.containsKey (accountID) && money >= 0 && accounts.get(accountID) - money >= 0)
 		{
 			accounts.replace (accountID, (accounts.get(accountID) - money));
 			return true;
@@ -134,5 +135,17 @@ public class ATM {
 		chase.withdrawMoney(00002, 2020.2);
 		System.out.println(chase.checkBalance(00002)); // Should be 634.1 and 
 		//not a fraction more!
+		
+		// Tests account close
+		ATM bankOfAmerica = new ATM();
+		
+		bankOfAmerica.openAccount(002, 50.0);
+		System.out.println(bankOfAmerica.checkBalance(002)); //should be 50.0
+		bankOfAmerica.withdrawMoney(002, 50); 
+		System.out.println(bankOfAmerica.checkBalance(002)); //should be 0.0
+		bankOfAmerica.closeAccount(002);
+		System.out.println (bankOfAmerica.withdrawMoney (002, 40.0)); //should be false
+		
+
 	}
 }
